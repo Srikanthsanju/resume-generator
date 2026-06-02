@@ -19,22 +19,28 @@ GitHub: https://github.com/Srikanthsanju
 
 # 1. JD CLASSIFICATION OUTPUT REQUIRED BEFORE WRITING
 
-The backend must classify the JD before the writer generates the resume.
+The backend must classify the JD before the writer generates the resume. This classification is not a decoration. It is the routing plan for the entire resume.
 
-Required classification card:
+Required editable classification card:
 
 Primary Role:
 Secondary Role:
+Role Family:
 AI Intensity:
 Cloud Environment:
 Data Platform:
 Backend Environment:
+Domain Context:
 Required Skills:
 Preferred Skills:
+Top 10 ATS Keywords:
+Must-Prove Skills:
 Resume Strategy:
 Skills to Emphasize:
 Skills to Suppress:
 Forbidden Drift Terms:
+Evidence Plan:
+Interview Risk Notes:
 
 Allowed Primary Role values:
 AI Engineer
@@ -48,6 +54,17 @@ Platform Engineer
 Analytics Engineer
 Business Intelligence Engineer
 
+Allowed Role Family values:
+AI Platform
+ML Platform
+Data Platform
+Backend Platform
+Analytics
+BI and Reporting
+Healthcare Technology
+FinTech or Banking
+General Software Engineering
+
 Allowed AI Intensity values:
 Level 0: No AI
 Level 1: Light ML or analytics only
@@ -55,20 +72,42 @@ Level 2: ML focused
 Level 3: GenAI or RAG focused
 Level 4: Agentic AI focused
 
+AI intensity selection rule:
+Do not decide AI intensity from the candidate's projects. Decide it from the JD.
+If the JD title or responsibilities explicitly mention AI agents, LLMs, GenAI, LangChain, LlamaIndex, RAG, vector databases, embeddings or prompt workflows, set AI Intensity to Level 3 or Level 4 even when the title is Python Engineer or Software Engineer.
+If the JD is Data Engineer, Analytics Engineer, BI Engineer or pure Backend Engineer and only mentions Python, SQL, cloud, APIs, Spark, ETL or dashboards, set AI Intensity to Level 0 or Level 1.
+
+Evidence Plan format:
+For every required skill, the classifier must decide where it will appear:
+Skill:
+Summary mention: Yes or No
+Skills section mention: Yes or No
+Experience proof bullet: Bee Data, Allied, BYJU'S, Cognizant or Not Supported
+Project lane:
+Risk level: Low, Medium or High
+
 Writer rule:
-The writer must not generate the resume until Primary Role, AI Intensity and Cloud Environment are selected.
+The writer must not generate the resume until Primary Role, AI Intensity, Cloud Environment and Evidence Plan are selected.
+The writer must treat the selected role lane as the main source. Secondary Role may contribute only 1 or 2 supporting bullets per recent role.
+The writer must never pull a skill only because it is impressive. The skill must be required by the JD, preferred by the JD or needed to make the selected role believable.
+
+JD reading rule:
+The writer must identify the actual job being hired for, not just the title.
+Example: A "Python Engineer" JD that asks for AI agent logic, LangChain, state persistence and long-running tasks is a Backend AI Platform role, not a generic Python API role.
+Example: A "Data Engineer" JD that asks for Spark, Airflow, BigQuery and ETL is a Data Platform role, not an AI Engineer role.
+Example: A "Data Scientist" JD that asks for forecasting, experimentation, regression and business insights is an analytical modeling role, not an MLOps engineer role.
 
 ---
 
 # 2. ROLE WEIGHT RULES
 
-The writer must use these weights when selecting bullets.
+The writer must use these weights when selecting bullets. These are responsibility weights, not keyword stuffing weights. A resume should sound like the role being hired for.
 
 AI Engineer:
-60% GenAI, LLM, RAG, agents, prompt engineering, embeddings or model serving
-20% backend, APIs, platform services
-15% MLOps, deployment, monitoring
-5% data engineering
+55% GenAI, LLM, RAG, agents, prompt engineering, embeddings, safety, evaluation or model serving
+20% backend, APIs and platform services
+15% MLOps, deployment and monitoring
+10% data pipelines and storage
 
 ML Engineer:
 45% model training, evaluation, deployment, monitoring, drift and MLOps
@@ -89,10 +128,16 @@ Data Engineer:
 5% AI or ML only if JD explicitly asks
 
 Python Developer or Software Engineer:
-55% Python backend, APIs, services, databases, async processing and testing
-25% cloud deployment, containers and monitoring
-15% data processing or automation
-5% AI only if JD explicitly asks
+50% Python backend, APIs, services, databases, async processing, authentication and testing
+25% cloud deployment, containers, observability and reliability
+15% data processing, integrations or automation
+10% AI framework integration only if JD explicitly asks
+
+Python Engineer with AI Agent JD:
+40% Python backend APIs, FastAPI, Django, auth, databases and async processing
+25% AI agent backend infrastructure, LangChain or LlamaIndex integration, state persistence and workflow routing
+20% cloud, containers, API Gateway, task queues and observability
+15% SQL, NoSQL, vector databases and service reliability
 
 Backend Engineer:
 60% APIs, microservices, databases, auth, async workflows, reliability and observability
@@ -112,35 +157,89 @@ Analytics Engineer or BI Engineer:
 15% Python automation
 10% statistics or ML only if JD asks
 
+Hybrid role rule:
+If a JD combines two role families, select one Primary Role and one Secondary Role. The Primary Role must drive the summary, skills order and first 5 bullets of the latest role.
+Examples:
+Python Engineer + AI agents = Primary Role Python Developer, Secondary Role AI Engineer, AI Intensity Level 4
+Data Engineer + ML pipelines = Primary Role Data Engineer, Secondary Role ML Engineer, AI Intensity Level 2
+Data Scientist + MLOps deployment = Primary Role Data Scientist, Secondary Role ML Engineer, AI Intensity Level 2
+
 ---
 
 # 3. ROLE DRIFT CONTROL RULES
 
+Role drift means the resume sounds like a different job than the JD. High ATS score is useless if the recruiter feels the resume is not believable for the role.
+
 If Primary Role is Data Engineer:
 Avoid RAG, prompt engineering, LangGraph, GPT-4, Claude, LoRA, fine-tuning, agentic workflows and vector databases unless the JD explicitly mentions GenAI, LLM, RAG, embeddings or agents.
 Use pipeline, ingestion, transformation, orchestration, Spark, Airflow, Databricks, Snowflake, BigQuery, data quality, warehouse, monitoring, batch processing and cloud storage.
+Allowed AI wording for Data Engineer: "ML features", "scoring outputs", "embedding generation" or "model input datasets" only when the JD mentions ML or AI data pipelines.
 
 If Primary Role is Python Developer or Software Engineer:
-Avoid leading with ML models, RAG, embeddings, fine-tuning or prompt engineering.
-Use FastAPI, REST APIs, async services, Pydantic, authentication, PostgreSQL, Redis, Docker, Kubernetes, CI/CD, logging, monitoring and service reliability.
+Do not lead with ML models, RAG, fine-tuning or prompt engineering.
+Use FastAPI, Django, REST APIs, async services, Pydantic, Celery, authentication, PostgreSQL, Redis, Docker, Kubernetes, CI/CD, logging, monitoring and service reliability.
+If the JD explicitly asks for AI agents, LangChain, LlamaIndex, vector databases or AI frameworks, describe AI as backend infrastructure. Use words like "agent workflow orchestration", "state persistence", "long-running tasks", "tool integration" and "routing logic". Do not sound like an AI researcher.
 
 If Primary Role is Data Scientist:
 Avoid sounding like only a pipeline engineer.
 Use feature engineering, model evaluation, classification, regression, scoring, experimentation, thresholds, accuracy, precision, recall, business outcomes and trend analysis.
+Use cloud and API content only as supporting context.
 
 If Primary Role is ML Engineer:
 Avoid only dashboard or BI language.
 Use model training, deployment, feature pipelines, inference APIs, MLflow, drift monitoring, experiment tracking, model registry, retraining and scalable serving.
+If GenAI is not in the JD, keep LLM wording minimal.
 
 If Primary Role is AI Engineer:
-Use GenAI terms only when the JD asks or when AI is central to the title.
+Use GenAI terms only when AI is central to the title or responsibilities.
 Use RAG, LangChain, LangGraph, LlamaIndex, GPT, Claude, embeddings, vector databases, prompt evaluation, safety, guardrails and human-in-the-loop review.
+Still keep backend, monitoring and production reliability visible so the resume does not sound like only prompt writing.
 
 Final validation:
 The scorer must calculate Role Drift Score before final output.
-If target role is Data Engineer and the resume has more than 2 GenAI terms in the latest experience, flag it for rewrite.
-If target role is Python Developer and the resume has more AI than backend/API language, flag it for rewrite.
+If target role is Data Engineer and the resume has more than 2 GenAI terms in the latest experience, flag it for rewrite unless the JD explicitly asks for GenAI.
+If target role is Python Developer and the JD does not mention AI frameworks, the resume must not have more AI than backend/API language.
+If target role is Python Engineer and the JD explicitly asks for AI agent logic, LangChain or LlamaIndex, AI backend bullets are allowed but must be written as software engineering responsibilities.
 If target role is Data Scientist and the resume does not mention analysis, modeling, metrics or feature engineering, flag it for rewrite.
+
+# 3A. JD RESPONSIBILITY TRANSLATION RULES
+
+The writer must translate each project into the responsibilities of the JD instead of copying project descriptions.
+
+Do not write:
+"Built RAG chatbot using LangChain and Claude"
+when the JD is Data Engineer.
+
+Write:
+"Built document ingestion and indexing pipelines that transformed policy PDFs into searchable structured datasets with metadata, validation and scheduled refresh jobs."
+
+Do not write:
+"Built AI agent workflow with LangGraph"
+when the JD is Python Engineer unless the JD asks for AI agents.
+
+Write:
+"Built backend workflow orchestration for long-running AI tasks with state persistence, async workers, Redis and PostgreSQL."
+
+Do not write:
+"Used AWS services"
+when the JD asks for GCP.
+
+Write:
+"Built cloud data workflows using Cloud Storage, Cloud SQL, Pub/Sub and Cloud Monitoring" only if GCP was selected and mapped.
+
+Required skill proof rule:
+Every required skill in the JD must be handled in one of four ways:
+1. Proven in a bullet with specific responsibility
+2. Listed in skills and supported indirectly by related experience
+3. Marked as exposure only
+4. Suppressed because it is unsupported or risky
+
+Never list a required skill only in Skills if it is central to the JD. Central skills must appear in experience bullets.
+
+Interview safety rule:
+If a skill is included in a bullet, the bullet must be specific enough to answer follow-up questions.
+Bad: "Worked on authentication"
+Good: "Implemented OAuth2 and OpenID Connect flows with JWT validation, token expiration handling and role-based access controls."
 
 ---
 
@@ -198,6 +297,18 @@ EMR Spark: Dataproc
 Kinesis: Pub/Sub
 Step Functions: Cloud Workflows
 API Gateway: API Gateway or Cloud Endpoints
+
+Cloud rewrite discipline:
+Do not blindly convert every cloud service when the JD mentions a cloud once.
+Switch cloud only when the selected Cloud Environment says so.
+When switching cloud, keep the responsibility the same and replace only the infrastructure nouns.
+If the replacement sounds unrealistic or unsupported, use cloud-neutral wording such as object storage, managed PostgreSQL, API gateway, container orchestration, cloud monitoring or serverless functions.
+
+Cloud consistency check:
+Each company must use one cloud family in Work Experience and the Skills section.
+If Bee Data is rewritten as GCP, do not mention AWS services in Bee Data bullets or Bee Data environment.
+If Allied Health remains AWS, do not add GCP services to Allied Health just because GCP appears in the JD.
+BYJU'S may remain GCP because the truth base already supports GCP.
 
 Data tool substitutions:
 If JD asks Airflow, replace Kubeflow orchestration references with Airflow for data pipelines.
@@ -277,15 +388,20 @@ Performed statistical analysis on scoring outcomes to measure correlation betwee
 ### Bee Data Lane: Python Developer or Software Engineer
 
 Developed async FastAPI services handling resume upload, document parsing, ATS scoring, resume rewriting, job matching and user profile management workflows with sub-100ms P95 latency for 10,000+ daily API requests.
-Built backend API contracts connecting React TypeScript frontend components with document processing services, model scoring endpoints, PostgreSQL storage and S3 document retrieval through well-defined REST interfaces.
+Built Django admin dashboards and ORM-backed modules for internal operations, user management and metadata review screens connected to PostgreSQL reducing internal tooling development time.
+Built backend API contracts connecting React TypeScript frontend components with document processing services, scoring endpoints, PostgreSQL storage and S3 document retrieval through versioned REST interfaces.
 Implemented Pydantic schemas for request validation, structured response models and consistent error handling across 15+ service endpoints reducing integration bugs with frontend development team.
 Designed modular Python service layers separating parsing, scoring, rewriting, job ingestion, interview feedback and user profile operations into independently testable modules with clear dependency boundaries.
-Implemented OAuth 2.0 authentication using AWS Cognito, API rate limiting with Redis, circuit breaker patterns for external LLM API calls and structured JSON logging enabling production observability.
-Built WebSocket connections for real-time typing suggestions in the writing assistant with sub-50ms latency and SSE streaming endpoints for long-running LLM response delivery with automatic reconnection fallback.
+Implemented OAuth2 and OpenID Connect authentication flows with JWT token validation, token expiration handling and role-based access controls protecting backend APIs and user data across internal and external consumers.
+Built Celery task queues with Redis broker for long-running document parsing, batch scoring and analytics aggregation jobs implementing task chains, dead letter queues, progress tracking and timeout handling for reliable async processing.
+Built WebSocket connections for real-time typing suggestions in the writing assistant with sub-50ms latency and SSE streaming endpoints for long-running response delivery with automatic reconnection fallback.
 Created retry logic, timeout handling and graceful fallback paths for external API dependencies including job data providers, LLM services and document OCR processing ensuring service resilience under provider outages.
 Containerized backend services using Docker multi-stage builds and deployed on AWS EKS with Kubernetes pod autoscaling, health checks and rolling deployments achieving 99.5% uptime.
 Optimized PostgreSQL connection pooling, query execution plans and indexing strategies for user profile retrieval, scoring history lookup and job match pagination reducing database load by 40%.
-Built background task processing using async Python workers for long-running document parsing, batch scoring and interview analysis jobs with status tracking and structured result delivery.
+Stored session and cache data in Redis with TTL-based expiration and used MongoDB for flexible document-oriented storage of parsed resume structures and job posting metadata where schema variability required NoSQL flexibility.
+Designed API Gateway routing and internal service communication patterns enabling independent scaling of document processing, scoring and user management services without tight cross-service coupling.
+
+NOTE FOR WRITER: For pure Python/SE roles, limit AI-related bullets to maximum 2 across the entire resume. If the JD explicitly asks for AI agent logic, LangChain, LlamaIndex, vector databases or workflow orchestration, allow 3 to 5 AI-backend bullets across recent roles, but write them as backend responsibilities around APIs, state persistence, task queues, routing and reliability. Do not lead with model training, prompt engineering or fine-tuning unless the JD asks.
 
 ### Bee Data Lane: Platform Engineer
 
@@ -514,13 +630,15 @@ Performed statistical analysis on insurance policy query patterns to identify do
 ### Allied Lane: Python Developer or Software Engineer
 
 Developed FastAPI services for call transcription processing, real-time sentiment inference, insurance policy Q&A, compliance review workflows and human agent escalation handling with request validation and structured error responses.
+Built Django REST endpoints for administrative workflows including agent performance dashboards, compliance review queues and operational configuration screens where built-in ORM models and admin tooling reduced development time.
 Built Python backend modules for Twilio webhook integration, AWS Transcribe streaming output parsing, transcript text cleaning, classification request routing and structured result formatting across call intelligence workflows.
-Created REST API endpoints with Pydantic validation, OAuth authentication, structured logging and health checks serving real-time sentiment predictions and policy answers for healthcare operations teams.
-Implemented asynchronous processing patterns for long-running transcription jobs, batch document ingestion tasks, policy reindexing workflows and analytics report generation with status tracking and retry support.
+Created REST API endpoints with Pydantic validation, structured logging and health checks serving real-time sentiment predictions and policy answers for healthcare operations teams.
+Implemented OAuth2 and OpenID Connect authentication flows with JWT validation, token lifecycle management and role-based access controls for protected healthcare backend APIs.
+Implemented asynchronous processing patterns using Celery workers for long-running transcription jobs, batch document ingestion tasks, policy reindexing workflows and analytics report generation with progress tracking and retry handling.
 Integrated S3 document storage, RDS PostgreSQL metadata tables, DynamoDB conversation logs and Redis session caching into backend service layer providing consistent data access patterns across call and chatbot workflows.
 Designed Redis Streams-based messaging for passing call processing events between transcription, classification, compliance and routing service components enabling loose coupling and independent scaling.
 Built event-triggered serverless functions using Lambda for real-time document reindexing on S3 uploads, automated policy embedding generation and scheduled consistency verification jobs.
-Implemented secure service patterns with KMS encryption for call recordings, role-based access controls for healthcare data, CloudTrail audit logging and HIPAA-compliant data handling across all API endpoints.
+Supported healthcare workflow controls with audit logging, access restrictions, encrypted storage and traceable API activity aligned with HIPAA and clinical data handling expectations.
 Created PostgreSQL schemas for call metadata, transcript segments, sentiment outputs, compliance flags, routing decisions, policy chunks, user queries, citation references and audit trail records.
 
 ---
@@ -752,6 +870,46 @@ Improved data reliability by reconciling source files, transformed outputs and r
 
 ---
 
+# 8A. JD TO RESUME SELECTION EXAMPLES
+
+Example 1:
+JD: Python Engineer, FastAPI, Django, AI agents, LangChain, PostgreSQL, Redis, Docker, cloud, async task queues
+Primary Role: Python Developer
+Secondary Role: AI Engineer
+AI Intensity: Level 4
+Use: Bee Data Python lane, selected Bee Data AI backend bullets, Allied Python lane, P3 Python lane
+Avoid: Data Scientist scoring-heavy bullets, Data Engineer warehouse-heavy bullets, LoRA unless explicitly required
+Summary tone: Python backend engineer building AI agent infrastructure
+
+Example 2:
+JD: Data Engineer, Spark, Airflow, BigQuery, ETL, data quality, GCP
+Primary Role: Data Engineer
+Secondary Role: None or Analytics Engineer
+AI Intensity: Level 0 or Level 1
+Use: Bee Data Data Engineer lane, Allied Data Engineer lane, BYJU'S Data Engineer lane
+Avoid: RAG, GPT, Claude, prompt engineering, LangGraph, LoRA
+Summary tone: Cloud data engineer building pipelines and warehouse workflows
+
+Example 3:
+JD: Machine Learning Engineer, model deployment, feature pipelines, MLflow, drift, inference APIs
+Primary Role: ML Engineer
+Secondary Role: Platform Engineer
+AI Intensity: Level 2
+Use: Bee Data ML lane, P1 ML lane, Allied ML lane, P3 ML lane
+Avoid: too much dashboard language, too much pure LLM rewriting unless JD asks
+Summary tone: ML engineer building training, serving and monitoring workflows
+
+Example 4:
+JD: Data Scientist, regression, classification, experiments, Python, SQL, business metrics
+Primary Role: Data Scientist
+Secondary Role: Data Engineer
+AI Intensity: Level 1 or Level 2
+Use: Bee Data Data Scientist lane, Allied Data Scientist lane, BYJU'S Data Scientist lane
+Avoid: Kubernetes-heavy platform bullets and backend-only API bullets
+Summary tone: Data scientist turning models and analysis into business decisions
+
+---
+
 # 9. ROLE SPECIFIC RESUME SUMMARY BANK
 
 Use only one summary style based on the classified Primary Role.
@@ -769,10 +927,10 @@ Data Engineer Summary Pattern:
 Data Engineer with 7 years of experience building Python based ETL pipelines, cloud data workflows, batch processing systems, warehouse models and data quality frameworks across healthcare, education technology and AI product environments. Skilled in Spark, SQL, PostgreSQL, BigQuery, cloud storage, orchestration and production data monitoring.
 
 Python Developer Summary Pattern:
-Python Developer with 7 years of experience building backend services, APIs, data processing workflows and cloud deployed applications using Python, FastAPI, PostgreSQL, Redis, Docker, Kubernetes and SQL. Experienced in designing reliable service layers, integrating external APIs, processing large datasets and supporting production systems.
+Python Developer with 7 years of experience building backend services, APIs, async processing workflows and cloud deployed applications using Python, FastAPI, Django, PostgreSQL, Redis, Docker and Kubernetes. Experienced in designing reliable service layers with OAuth2 authentication, Celery task queues, API gateway routing and production monitoring across healthcare, education and AI product environments.
 
 Software Engineer Summary Pattern:
-Software Engineer with 7 years of experience developing backend platforms, API driven applications, data processing services and cloud deployed systems using Python, FastAPI, SQL, PostgreSQL, Docker, Kubernetes and modern observability practices. Skilled in building scalable services with clear API contracts, validation, authentication and production reliability.
+Software Engineer with 7 years of experience developing backend platforms, API driven applications, data processing services and cloud deployed systems using Python, FastAPI, Django, PostgreSQL, Docker, Kubernetes and modern observability practices. Skilled in building scalable services with clear API contracts, async task management, secure authentication and production reliability across enterprise and startup environments.
 
 ---
 
@@ -815,25 +973,115 @@ Monitoring: CloudWatch or Azure Monitor or Cloud Monitoring, logging, pipeline a
 
 ## Python Developer or Software Engineer Skills
 Programming: Python, SQL, JavaScript, TypeScript
-Backend: FastAPI, Flask, REST APIs, WebSocket, SSE, Pydantic, OAuth 2.0, rate limiting
-Databases: PostgreSQL, Redis, SQL Server, DynamoDB only if selected environment uses AWS
-Cloud and DevOps: Docker, Kubernetes, GitHub Actions, cloud monitoring, CI/CD
+Backend: FastAPI, Django, Flask, REST APIs, WebSocket, SSE, Pydantic, Celery
+Authentication: OAuth2, OpenID Connect, JWT, role-based access controls
+Databases: PostgreSQL, Redis, MongoDB (document storage), SQL Server, DynamoDB only if AWS environment
+Cloud and DevOps: Docker, Kubernetes, GitHub Actions, CI/CD, cloud monitoring
+Cloud Platforms: AWS (EKS, Lambda, S3, RDS, API Gateway, CloudWatch), GCP (Cloud Run, GKE, Cloud Storage, Cloud SQL, Pub/Sub) — list only clouds used in bullets
 Data Processing: Pandas, openpyxl, batch jobs, file processing, API integrations
+Service Architecture: API Gateway routing, internal service communication, async task queues
 
 ---
 
 # 11. FINAL WRITER RULES
 
-Read the JD first and classify it before selecting content.
+Generation order:
+1. Read the JD completely.
+2. Classify Primary Role, Secondary Role, AI Intensity, Cloud Environment and Role Family.
+3. Build the Evidence Plan for required and preferred skills.
+4. Select company lanes based on Primary Role.
+5. Add Secondary Role bullets only where the JD requires them.
+6. Select cloud and tool substitutions.
+7. Write Summary, Skills and Experience.
+8. Run Role Drift Score, ATS Keyword Coverage Score, Believability Score, Skill Proof Score and Cloud Consistency Score.
+9. Rewrite weak sections before final output.
+
+Bullet writing discipline:
+Each bullet should contain one core responsibility, one technical method and one outcome or purpose.
+Preferred length: 22 to 34 words.
+Maximum length: 42 words unless the bullet is highly technical and still readable.
+Avoid stacking 5+ tools in the same bullet.
+Do not start every bullet with the same verbs.
+Avoid overusing Architected, Implemented, Designed, Built, Created and Developed.
+Use stronger but natural verbs such as engineered, delivered, automated, optimized, integrated, standardized, productionized, migrated, modeled, validated and monitored.
+Each recent role should have 8 to 10 bullets unless the user asks for more.
+Second role should have 7 to 9 bullets.
+Older roles should have 4 to 6 bullets.
+
+ATS coverage discipline:
+The top required skills from the JD must appear across Summary, Skills and Experience.
+A skill must not be listed in Skills unless it appears in selected bullet content or is clearly supported by a replaceable skill group.
+For required skills, prefer at least one proof bullet in the latest or second latest role.
+Do not hide important required skills only in the Skills section.
+
+AI content rules:
+If Primary Role is Python Developer, Software Engineer, Backend Engineer, Data Engineer, Analytics Engineer or Platform Engineer, AI-related bullets must be controlled by AI Intensity.
+If AI Intensity is Level 0 or Level 1, limit AI-related terms to maximum 2 across the entire resume.
+If AI Intensity is Level 3 or Level 4 because the JD explicitly asks for AI frameworks, AI agents, LangChain, LlamaIndex, embeddings, vector databases or RAG, AI-related bullets are allowed. They must be written as engineering responsibilities, not research claims.
+For Python AI backend roles, use language like state persistence, long-running task management, agent workflow orchestration, tool routing, API integration, async workers and observability.
+Do not lead with LoRA, fine-tuning, prompt engineering or model research unless the JD explicitly requires those terms.
+
+Service mesh and architecture language:
+Do not use "service mesh" unless naming a specific tool such as Istio, Linkerd or AWS App Mesh.
+Prefer "API Gateway routing and internal service communication patterns" because it is accurate and interview-safe.
+Use "service mesh" only when the JD explicitly asks for it and the generated bullet names the implementation.
+
+Tool specificity rule:
+When mentioning a tool, be specific enough that an interviewer would believe it.
+Bad: "Worked on authentication."
+Good: "Implemented OAuth2 and OpenID Connect flows with JWT validation, token expiration handling and role-based access controls."
+Bad: "Used async queues."
+Good: "Built Celery workers with Redis broker for long-running parsing and scoring jobs with retries, progress tracking and timeout handling."
+
+MongoDB usage rule:
+Include MongoDB in bullets only when the JD explicitly asks for MongoDB or NoSQL.
+When used, frame it as document-oriented storage for schema-variable data such as parsed resume structures, job posting metadata or configuration objects.
+Do not list MongoDB prominently if no bullet supports it. Use "MongoDB exposure" or "MongoDB for document storage" only when necessary.
+
+Django usage rule:
+If Django appears in required or preferred skills, include one Django proof bullet where relevant.
+Use Django for admin workflows, ORM-backed modules, internal dashboards, authentication-backed portals or Django REST endpoints.
+Do not list Django only in Skills if the JD strongly asks for it.
+
+Identity and security rule:
+If OAuth2, JWT or OpenID Connect appear in the JD, include one proof bullet with token validation, expiration handling, role-based access and protected endpoints.
+Use AWS Cognito, Entra ID, Firebase Auth or a cloud-neutral identity provider based on selected environment.
+
+Async task queue rule:
+If the JD asks for asynchronous task queues, include Celery, Redis Queue, SQS, Pub/Sub, Kafka or Redis Streams depending on selected environment and project lane.
+The bullet must explain what the queue handled, such as parsing jobs, scoring jobs, document reindexing, transcription processing or analytics aggregation.
+
+Good Clinical Practice and healthcare wording:
+If the JD asks for Good Clinical Practice, clinical systems, healthcare or regulated workflows, use careful wording.
+Allowed: clinical data handling expectations, audit logging, traceable API activity, access restrictions, healthcare workflow controls, HIPAA aligned handling.
+Avoid claiming formal GCP compliance unless the JD specifically needs it and the experience supports it.
+
+Metric discipline:
+Use measurable outcomes where available: 5,000+ users, 30% quality improvement, 40% support workload reduction, 88% accuracy and 60% reporting effort reduction.
+Do not overload one role with too many metrics.
+Maximum 2 or 3 strong metrics per recent role unless the user asks for a metrics-heavy resume.
+Avoid unrealistic combinations like sub-100ms latency, 10,000+ daily requests, 99.9% uptime and 75% cost reduction in the same role.
+
+Cloud consistency:
+Keep each company internally consistent with one cloud environment.
+Use the JD's cloud emphasis, but do not rewrite all companies to the same cloud unless the selected Cloud Environment and truth base allow it.
+Only list cloud services in Skills that appear in the generated bullets.
+
+Role lane selection:
 Use the selected Primary Role lane first.
-Use Secondary Role only for 1 or 2 supporting bullets.
+Use Secondary Role only for 1 or 2 supporting bullets per recent role.
 Do not combine all role lanes in one resume.
 Do not invent tools, companies, projects, metrics or responsibilities outside this file.
 Do not mention internal product names that are too specific to one company unless needed.
-Do not overuse AI terms for non AI roles.
-Do not mention RAG, LangGraph, agentic workflows, GPT, Claude, LoRA or prompt engineering for Data Engineer or Python Developer resumes unless the JD explicitly asks.
-Use measurable outcomes where available: 5,000+ users, 30% quality improvement, 40% support workload reduction, 88% accuracy and 60% reporting effort reduction.
-Keep each company internally consistent with one cloud environment.
-Use the JD's terminology, but only when it maps to allowed skills or replaceable tool groups in this file.
-Before final output, run Role Drift Score, ATS Keyword Coverage Score, Believability Score and Cloud Consistency Score.
+
+Final scoring requirements:
+Before final output, run these checks:
+Role Drift Score: Does the resume sound like the target role?
+ATS Keyword Coverage Score: Are the required skills visible in Summary, Skills and Experience?
+Skill Proof Score: Are required skills supported by believable bullets?
+Believability Score: Are bullets specific, not overstuffed and interview-safe?
+Cloud Consistency Score: Does each company use one cloud ecosystem?
+Length Score: Is the resume readable and not overloaded?
+
+If any score is weak, rewrite before final output.
 

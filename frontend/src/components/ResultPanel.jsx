@@ -16,25 +16,23 @@ function extractCoreSkills(jd) {
   for (const p of patterns) {
     const m = jd.match(p)
     if (m) {
-      const terms = m[1].match(/\b(?:Python|SQL|PySpark|PyTorch|TensorFlow|NLP|LLM|LLMs|RAG|AWS|Azure|GCP|Kubernetes|Docker|Spark|Kafka|Airflow|Snowflake|Databricks|FastAPI|LangChain|ML|AI|GenAI|Tableau|Power BI|Scikit.learn|Pandas|React|BigQuery|PostgreSQL|Redis|Pinecone|Terraform|MLflow|Hugging Face|Transformers|Deep Learning|Machine Learning|Computer Vision)\b/gi)
+      const terms = m[1].match(/\b(?:Python|SQL|PySpark|PyTorch|TensorFlow|NLP|LLM|LLMs|RAG|AWS|Azure|GCP|Kubernetes|Docker|Spark|Kafka|Airflow|Snowflake|Databricks|FastAPI|Django|Flask|LangChain|ML|AI|GenAI|Tableau|Power BI|Scikit.learn|Pandas|React|BigQuery|PostgreSQL|Redis|MongoDB|Pinecone|Terraform|MLflow|Hugging Face|Transformers|Deep Learning|Machine Learning|Computer Vision|Celery|OAuth|JWT)\b/gi)
       if (terms) return [...new Set(terms.map(t => t.trim()))].slice(0, 4)
     }
   }
   return []
 }
 
-function buildEmailBody(name, role, location, jobType, jd) {
+function buildEmailBody(name, role, location, jobType) {
   const auth = WORK_AUTH[jobType] || WORK_AUTH.contract
   const first = name.split(' ')[0] || 'Hi'
-  const skills = extractCoreSkills(jd)
-  const skillsLine = skills.length > 0 ? skills.join(', ') : 'the core requirements listed'
   const locLine = location ? `\nWork Location: ${location}` : ''
 
   return `Hi ${first},
 
 I came across the ${role || 'open position'} role${location ? ' in ' + location : ''} and wanted to express my interest.
 
-The role aligns well with my background — I have hands-on experience with ${skillsLine} in production environments and have delivered real-world solutions in these areas.
+The role aligns well with my background and I have real-world experience delivering production solutions in these areas.
 
 Role: ${role || 'As mentioned'}${locLine}
 Work Authorization: ${auth}
@@ -45,12 +43,43 @@ Best regards,
 Srikanth`
 }
 
+// Clipboard fallback that works on HTTP (not just HTTPS)
+function copyToClipboard(text) {
+  // Try modern API first (works on HTTPS and localhost)
+  if (navigator.clipboard && window.isSecureContext) {
+    return navigator.clipboard.writeText(text)
+  }
+  // Fallback for HTTP: use a hidden textarea + execCommand
+  return new Promise((resolve, reject) => {
+    const textarea = document.createElement('textarea')
+    textarea.value = text
+    textarea.style.position = 'fixed'
+    textarea.style.left = '-9999px'
+    textarea.style.top = '-9999px'
+    document.body.appendChild(textarea)
+    textarea.focus()
+    textarea.select()
+    try {
+      const ok = document.execCommand('copy')
+      document.body.removeChild(textarea)
+      if (ok) resolve()
+      else reject(new Error('execCommand copy failed'))
+    } catch (err) {
+      document.body.removeChild(textarea)
+      reject(err)
+    }
+  })
+}
+
 function CopyButton({ label, text }) {
   const [copied, setCopied] = useState(false)
   const handleCopy = () => {
-    navigator.clipboard.writeText(text).then(() => {
+    copyToClipboard(text).then(() => {
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
+    }).catch(() => {
+      // Last resort: prompt user to copy manually
+      window.prompt('Copy this text:', text)
     })
   }
   return (
@@ -76,7 +105,7 @@ export default function ResultPanel({ result, jobType }) {
 
   const delta = result.iteration_2_score - result.iteration_1_score
   const emailSubject = `Application for ${email.role || 'the open position'} - Srikanth Manchimchetty`
-  const emailBody = buildEmailBody(email.name, email.role, email.location, jobType, '')
+  const emailBody = buildEmailBody(email.name, email.role, email.location, jobType)
   const mailtoUrl = `mailto:${email.to}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`
 
   const inp = { width: '100%', padding: '8px 10px', border: '1px solid #d1d5db', borderRadius: '6px', fontSize: '13px', fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }
@@ -126,7 +155,7 @@ export default function ResultPanel({ result, jobType }) {
           Email Recruiter
         </a>
 
-        {/* Copy buttons — for desktop where mailto opens Outlook */}
+        {/* Copy buttons — for desktop, uses fallback that works on HTTP */}
         <div style={{ display: 'flex', gap: '6px' }}>
           <CopyButton label="Copy Email" text={email.to} />
           <CopyButton label="Copy Subject" text={emailSubject} />
@@ -134,7 +163,7 @@ export default function ResultPanel({ result, jobType }) {
         </div>
 
         <p style={{ fontSize: '11px', color: '#9ca3af', margin: '6px 0 0', lineHeight: '1.4' }}>
-          Mobile: "Email Recruiter" opens Gmail app with composed email. Desktop: use copy buttons to paste into Gmail tab.
+          Mobile: "Email Recruiter" opens Gmail app. Desktop: use copy buttons to paste into Gmail tab.
           {jobType === 'gc' ? ' Work auth: Green Card.' : ' Work auth: H1B + W2.'}
         </p>
       </div>
