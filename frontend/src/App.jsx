@@ -15,7 +15,7 @@ export default function App() {
     setLoading('reading'); setError(null); setStrategy(null); setResult(null); setFormData(fd)
     try {
       const r = await fetch('/api/read-jd', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jd: fd.jd, job_type: fd.job_type, role_type: fd.role_type }) })
-      if (!r.ok) { const e = await r.json(); throw new Error(e.detail || 'Read JD failed') }
+      if (!r.ok) { const e = await r.json(); throw new Error(typeof e.detail === 'string' ? e.detail : JSON.stringify(e.detail)) }
       const data = await r.json()
       setStrategy(data.strategy)
       setRecruiter(data.recruiter)
@@ -30,7 +30,7 @@ export default function App() {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...formData, strategy: approvedStrategy })
       })
-      if (!r.ok) { const e = await r.json(); throw new Error(e.detail || 'Generation failed') }
+      if (!r.ok) { const e = await r.json(); throw new Error(typeof e.detail === 'string' ? e.detail : JSON.stringify(e.detail)) }
       setResult(await r.json())
     } catch (e) { setError(e.message) }
     finally { setLoading(null) }
