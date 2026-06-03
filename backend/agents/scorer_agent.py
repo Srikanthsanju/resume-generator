@@ -2,93 +2,88 @@ import json
 from openai import OpenAI
 from backend.config import OPENAI_API_KEY, SCORER_MODEL
 
+
 class ScorerAgent:
     def __init__(self):
         self.client = OpenAI(api_key=OPENAI_API_KEY)
         self.model = SCORER_MODEL
 
-    def _mode(self, jt):
-        if jt == "contract": return "CONTRACT: 12-15 bullets/recent role normal. Env+Desc expected. Verb max 3."
-        if jt == "fulltime": return "FULLTIME: 10-12 bullets/recent role. No env/desc. Ownership language positive. Verb max 2."
-        return "GC: 5 companies, 10yr. All 3 clouds expected (fixed per company). Cardinal=Azure, UBS=Azure, MTA=GCP, Cognizant=AWS, Couth=AWS. GenAI only Cardinal. ML only UBS+Cardinal. Env expected. No desc. Verb max 3."
+    def score(self, draft, jd, job_type, guidelines, strategy, iteration=1):
+        system = f"""You are a resume evaluator. You have the approved strategy and must check whether the writer executed it correctly.
 
-    def _chrono(self, jt):
-        if jt == "gc": return "Never penalize MTA/Cognizant/Couth for missing AI. GenAI only in Cardinal Health."
-        return "Never penalize BYJU'S/Cognizant for missing GenAI. Basic ML fine for BYJU'S."
-
-    def score(self, draft, jd, job_type, guidelines, iteration=1):
-        system = f"""You are a senior technical recruiter and ATS expert.
-
-━━━ TASK 1: GLOBAL ATS SCORE (0-100) ━━━
-
-95-100: Perfect. Zero violations, natural tone, every JD requirement.
-90-94: Excellent. 1-2 minor gaps, submission-ready.
-85-89: Strong but has fixable issues.
-80-84: Good foundation, multiple improvements needed.
-70-79: Decent but noticeable gaps.
-Below 70: Significant problems.
-
-SCORING DISCIPLINE:
-- Do NOT default to 85. Differentiate: 82, 86, 91, 94.
-- If 5+ fixable issues → score BELOW 87.
-- If genuinely strong with 1-2 minor issues → score 90+.
-- Calibrate: 8 issues = 80-84, not 85-89.
-- ITERATION 2: If fixes from iteration 1 were applied, score MUST increase. If ignored, call out which fixes were skipped.
-
-{self._mode(job_type)}
-
-━━━ TASK 2: POINTED FEEDBACK ━━━
-
-CHECK IN THIS ORDER:
-
-A. BULLET COMPLETENESS (CHECK FIRST — MOST IMPORTANT)
-   Count words in EVERY bullet. Any bullet under 15 words = CRITICAL violation (issue_type: "short_bullet").
-   Bullets should be 18-25 words minimum. Short fragments are UNACCEPTABLE for a senior engineer resume.
-   60%+ of bullets must end with PURPOSE CLAUSE (enabling, supporting, improving, reducing, delivering, ensuring).
-   BAD: "Built ingestion pipelines using Kinesis and Airflow for batch processing" (12 words, abrupt)
-   GOOD: "Built batch and real-time data ingestion pipelines using Kinesis and Apache Airflow enabling efficient processing of high-volume streaming and historical telecom data" (24 words, complete)
-   For EVERY short bullet, provide an EXPANDED rewrite of 18-25 words.
-
-B. GUIDELINE VIOLATIONS
-   >3 "and" per bullet, semicolons, comma before "and", arrows/symbols, slashes
-   Weak verbs ("Responsible for", "Worked on"), abbreviation errors
-   Verb repetition beyond limit for this job type
-   Parentheses >3 across BULLET POINTS (skills section EXEMPT)
-   Chronology violations (GenAI in pre-2022 roles)
-
-C. JD ALIGNMENT GAPS
-   Required JD skills completely missing from resume
-   JD keywords missing from first 3-4 bullets of most recent role
-   Skills categories not ordered to match JD priority
-
-D. QUALITY ISSUES
-   Repeated concepts across roles (amnesia)
-   CLOUD MIXING: multiple clouds in same company = CRITICAL
-   Cloud split into multiple skills categories instead of one
-   Generic/AI-generated sounding text
-
-CHRONOLOGY: {self._chrono(job_type)}
-Parentheses limit = BULLET POINTS only. Skills section exempt.
-
-RESUME GLANCE TEST:
-After detailed analysis, step back. Does this look polished and recruiter-ready? If bullets are inconsistently short, if the resume looks sparse or if the writing quality varies between sections — flag "presentation" as major.
+APPROVED STRATEGY:
+{json.dumps(strategy, indent=2)}
 
 GUIDELINES:
 {guidelines}
 
-━━━ OUTPUT — ONLY THIS JSON ━━━
+═══ SCORING ═══
 
-{{"ats_score":<0-100>,"score_reasoning":"2-3 sentences. Mention bullet length if short bullets exist.","feedback":[{{"section":"summary|skills|exp1|exp2|exp3|exp4|exp5","bullet_index":<0-based or null>,"issue_type":"short_bullet|grammar|weak_verb|chronology|repetition|or_condition|missing_keyword|vague_bullet|verb_repetition|parentheses|cloud_mixing|presentation|other","severity":"critical|major|minor","problem":"What is wrong","current_text":"Exact text","suggested_rewrite":"Concrete 18-25 word rewrite"}}],"missing_from_jd":[{{"keyword":"...","jd_importance":"required|preferred|nice_to_have","suggestion":"Where and how to add it"}}],"top_3_fixes":["Fix 1","Fix 2","Fix 3"]}}
-"""
-        user = f"JOB DESCRIPTION:\n{jd}\n\nJOB TYPE: {job_type}\nITERATION: {iteration} of 2\n\nRESUME DRAFT JSON:\n{json.dumps(draft, indent=2)}"
+Give 5 SEPARATE scores (0-100 each):
+
+1. ATS_KEYWORD_COVERAGE: What % of primary_skills from the strategy appear in resume bullets with proof? Not just in skills section — in actual experience bullets.
+
+2. ROLE_ESSENCE: Does this resume SELL the role_essence? If strategy says "Build GCP data pipelines" but resume reads like "Document data governance," this score is LOW. Read the resume at a glance — what job does it look like?
+
+3. BELIEVABILITY: Are bullets specific, interview-safe, 20-30 words, not overstuffed with 5+ tools? Would a hiring manager believe this person did this work?
+
+4. SKILL_PROOF: For each primary_skill, is there at least one bullet that proves hands-on experience? List which skills have proof and which don't.
+
+5. ROLE_DRIFT_RISK: Is the resume drifting into a different role? If the suppress list says "no RAG, no LLM" but the resume mentions them, drift is HIGH. Score 0=no drift, 100=completely wrong role.
+
+HARD FAIL CONDITIONS:
+If ATS_KEYWORD_COVERAGE < 85 → must improve
+If ROLE_ESSENCE < 85 → must rewrite core bullets
+If SKILL_PROOF < 80 → must add proof bullets
+If BELIEVABILITY < 75 → must fix overstuffed bullets
+If ROLE_DRIFT_RISK > 25 → must remove drifting content
+
+BULLET CHECKS:
+- Any bullet under 15 words = CRITICAL (short_bullet)
+- Suppressed terms appearing = CRITICAL (role_drift)
+- Primary skill with zero proof bullets = MAJOR (missing_proof)
+
+ITERATION {iteration}: {"First evaluation. Be thorough — find every issue so the rewrite can fix them all at once." if iteration == 1 else "Second evaluation. Check if fixes from iteration 1 were applied. Score MUST increase if fixes were applied."}
+
+OUTPUT — ONLY this JSON:
+{{
+  "ats_score": <0-100 overall>,
+  "scores": {{
+    "ats_keyword_coverage": <0-100>,
+    "role_essence": <0-100>,
+    "believability": <0-100>,
+    "skill_proof": <0-100>,
+    "role_drift_risk": <0-100>
+  }},
+  "score_reasoning": "2-3 sentences explaining the scores",
+  "pass": true/false based on hard fail conditions,
+  "skill_proof_matrix": [
+    {{"skill": "Python", "proven": true, "where": "exp1 bullet 2"}},
+    {{"skill": "BigQuery", "proven": false, "where": "not found"}}
+  ],
+  "feedback": [
+    {{
+      "section": "summary|skills|exp1|exp2|exp3|exp4|exp5",
+      "bullet_index": <0-based or null>,
+      "issue_type": "short_bullet|role_drift|missing_proof|grammar|weak_verb|overstuffed|vague|repetition|other",
+      "severity": "critical|major|minor",
+      "problem": "What is wrong",
+      "current_text": "Exact text",
+      "suggested_rewrite": "Concrete 20-30 word rewrite"
+    }}
+  ],
+  "missing_from_jd": [
+    {{"keyword": "...", "jd_importance": "required|preferred", "suggestion": "Where to add it"}}
+  ],
+  "top_fixes": ["Most impactful fix", "Second fix", "Third fix"]
+}}"""
+
+        user = f"JD:\n{jd}\n\nJOB TYPE: {job_type}\nITERATION: {iteration}/2\n\nRESUME JSON:\n{json.dumps(draft, indent=2)}"
         try:
             r = self.client.chat.completions.create(
                 model=self.model, temperature=0.1, max_tokens=4000,
                 response_format={"type": "json_object"},
-                messages=[
-                    {"role": "system", "content": system},
-                    {"role": "user", "content": user},
-                ],
+                messages=[{"role": "system", "content": system}, {"role": "user", "content": user}],
             )
             res = json.loads(r.choices[0].message.content.strip())
             if "ats_score" in res:
@@ -98,4 +93,4 @@ GUIDELINES:
             return res
         except Exception as e:
             print(f"Scorer Error: {e}")
-            return {"ats_score": 0, "score_reasoning": str(e), "feedback": [], "missing_from_jd": [], "top_3_fixes": [str(e)], "error": str(e)}
+            return {"ats_score": 0, "scores": {}, "score_reasoning": str(e), "pass": False, "skill_proof_matrix": [], "feedback": [], "missing_from_jd": [], "top_fixes": [str(e)], "error": str(e)}

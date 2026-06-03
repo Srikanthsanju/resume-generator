@@ -7,18 +7,18 @@ const s = {
   row: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' },
   select: { width: '100%', padding: '10px 12px', border: '1px solid #d1d5db', borderRadius: '8px', fontSize: '14px', fontFamily: 'inherit', background: '#fff', outline: 'none', boxSizing: 'border-box' },
   input: { width: '100%', padding: '10px 12px', border: '1px solid #d1d5db', borderRadius: '8px', fontSize: '14px', fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' },
-  btn: { padding: '14px 24px', background: '#111827', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '15px', fontWeight: '600', cursor: 'pointer', marginTop: '4px' },
+  btn: { padding: '14px 24px', background: '#2563eb', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '15px', fontWeight: '600', cursor: 'pointer', marginTop: '4px' },
   btnOff: { padding: '14px 24px', background: '#9ca3af', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '15px', fontWeight: '600', cursor: 'not-allowed', marginTop: '4px' },
   fg: { display: 'flex', flexDirection: 'column' },
 }
 
-export default function InputForm({ onGenerate, loading }) {
+export default function InputForm({ onReadJd, loading }) {
   const [fd, setFd] = useState({ jd: '', job_type: 'contract', role_type: 'AI Engineer', role_name: '', company_name: '' })
   const u = (k) => (e) => setFd((p) => ({ ...p, [k]: e.target.value }))
   const ok = fd.jd.trim() && fd.role_name.trim() && fd.company_name.trim()
 
   return (
-    <form onSubmit={(e) => { e.preventDefault(); if (ok) onGenerate(fd) }} style={s.form}>
+    <form onSubmit={(e) => { e.preventDefault(); if (ok) onReadJd(fd) }} style={s.form}>
       <div style={s.fg}>
         <label style={s.label}>Job Description</label>
         <textarea style={s.textarea} placeholder="Paste the full job description here..." value={fd.jd} onChange={u('jd')} />
@@ -46,15 +46,15 @@ export default function InputForm({ onGenerate, loading }) {
       <div style={s.row}>
         <div style={s.fg}>
           <label style={s.label}>Role Name (from JD)</label>
-          <input style={s.input} type="text" placeholder="e.g. Senior AI Engineer" value={fd.role_name} onChange={u('role_name')} />
+          <input style={s.input} placeholder="e.g. GCP Data Engineer" value={fd.role_name} onChange={u('role_name')} />
         </div>
         <div style={s.fg}>
           <label style={s.label}>Company Name</label>
-          <input style={s.input} type="text" placeholder="e.g. Dell Technologies" value={fd.company_name} onChange={u('company_name')} />
+          <input style={s.input} placeholder="e.g. Axiom Technologies" value={fd.company_name} onChange={u('company_name')} />
         </div>
       </div>
       <button type="submit" style={!ok || loading ? s.btnOff : s.btn} disabled={!ok || loading}>
-        {loading ? 'Generating...' : 'Generate Resume'}
+        {loading ? 'Reading JD...' : '📋 Read JD & Build Strategy'}
       </button>
     </form>
   )
