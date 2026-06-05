@@ -81,7 +81,7 @@ OUTPUT — ONLY this JSON:
         user = f"JD:\n{jd}\n\nJOB TYPE: {job_type}\nITERATION: {iteration}/2\n\nRESUME JSON:\n{json.dumps(draft, indent=2)}"
         try:
             r = self.client.chat.completions.create(
-                model=self.model, temperature=0.1, max_tokens=4000,
+                model=self.model, temperature=0.1, max_completion_tokens=4000,
                 response_format={"type": "json_object"},
                 messages=[{"role": "system", "content": system}, {"role": "user", "content": user}],
             )

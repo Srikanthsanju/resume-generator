@@ -100,7 +100,7 @@ Return ONLY improved JSON."""
     def _call(self, system, user, temp=0.3):
         try:
             r = self.client.chat.completions.create(
-                model=self.model, temperature=temp, max_tokens=8000,
+                model=self.model, temperature=temp, max_completion_tokens=8000,
                 response_format={"type": "json_object"},
                 messages=[{"role": "system", "content": system}, {"role": "user", "content": user}],
             )
